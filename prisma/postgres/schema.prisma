@@ -1,0 +1,145 @@
+// PostgreSQL schema for the MRMNHS ICT Club Teaching Program registration system.
+//
+// Identical models to prisma/schema.prisma (SQLite, used for local development
+// and the automated test suite) — only the datasource provider differs. This
+// file drives BOTH the Supabase/production client generation and the DDL
+// migrations in prisma/postgres/migrations/.
+//
+// Switch the active client:
+//   npm run db:use:sqlite    → generate the SQLite client (dev/tests)
+//   npm run db:use:postgres  → generate the PostgreSQL client + deploy migrations
+//
+// scripts/generate-postgres-migration.ts regenerates this file from
+// prisma/schema.prisma, so model changes only need to be made once.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Registration {
+  id                      String    @id @default(cuid())
+  reference               String    @unique
+  email                   String
+  emailNormalized         String
+  fullName                String
+  preferredName           String?
+  gradeLevel              String
+  section                 String?
+  track                   String
+  experienceLevel         String?
+  learningGoals           String?
+  additionalInterests     String?
+  status                  String    @default("pending_review")
+  essentialConsent        Boolean
+  essentialConsentAt      DateTime
+  marketingConsent        Boolean   @default(false)
+  marketingConsentAt      DateTime?
+  idempotencyKey          String?   @unique
+  confirmationEmailStatus String    @default("not_sent")
+  adminNotes              String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  emailJobs EmailJob[]
+
+  @@index([emailNormalized])
+  @@index([status])
+  @@index([track])
+  @@index([gradeLevel])
+  @@index([createdAt])
+}
+
+model EmailJob {
+  id                 String    @id @default(cuid())
+  dedupeKey          String    @unique
+  kind               String // confirmation | approval | waitlist | decline | announcement
+  batchId            String?
+  registrationId     String?
+  toEmail            String
+  toName             String?
+  subject            String
+  template           String
+  payload            String // JSON-encoded template variables
+  status             String    @default("queued") // queued | processing | accepted | delivered | failed | cancelled
+  attempts           Int       @default(0)
+  maxAttempts        Int       @default(5)
+  nextAttemptAt      DateTime  @default(now())
+  provider           String?
+  providerMessageId  String?
+  lastError          String?
+  lastErrorCode      String?
+  sentAt             DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  registration Registration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  batch        AnnouncementBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextAttemptAt])
+  @@index([batchId])
+  @@index([registrationId])
+}
+
+model AnnouncementBatch {
+  id               String   @id @default(cuid())
+  subject          String
+  message          String
+  audience         String // human-readable description of the audience filter
+  kind             String   @default("essential") // essential | marketing
+  statuses         String // JSON array of included registration statuses
+  status           String   @default("sending") // sending | completed | partially_failed | failed | cancelled
+  totalRecipients  Int      @default(0)
+  sentCount        Int      @default(0)
+  acceptedCount    Int      @default(0)
+  failedCount      Int      @default(0)
+  createdById      String
+  createdByEmail   String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  jobs EmailJob[]
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  role         String    @default("admin")
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+
+  sessions Session[]
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  tokenHash    String    @unique
+  adminUserId  String
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  lastSeenAt   DateTime  @default(now())
+
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  actor      String // admin email or "system"/"anonymous"
+  targetType String?
+  targetId   String?
+  detail     String? // JSON string, no secrets or unnecessary personal data
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+}

@@ -1,0 +1,62 @@
+{
+  "name": "mrmnhs-ict-club-teaching-program",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Registration funnel and management platform for the MRMNHS ICT Club Teaching Program",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "node scripts/ensure-prisma-client.mjs && next dev",
+    "build": "node scripts/ensure-prisma-client.mjs && next build",
+    "start": "node scripts/ensure-prisma-client.mjs && next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/ensure-prisma-client.mjs --sqlite && vitest run",
+    "test:watch": "node scripts/ensure-prisma-client.mjs --sqlite && vitest",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:use:sqlite": "prisma generate",
+    "db:use:postgres": "prisma generate --schema prisma/postgres/schema.prisma && prisma migrate deploy --schema prisma/postgres/schema.prisma",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "admin:create": "tsx scripts/create-admin.ts",
+    "email:process": "tsx scripts/process-email-queue.ts",
+    "email:test": "tsx scripts/send-test-email.ts",
+    "postgres:schema": "tsx scripts/generate-postgres-migration.ts",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "next": "15.5.28",
+    "nodemailer": "^10.1.7",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.7",
+    "@playwright/test": "1.64.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "@types/node": "24.19.2",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.28",
+    "jsdom": "30.1.3",
+    "prisma": "6.19.3",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}

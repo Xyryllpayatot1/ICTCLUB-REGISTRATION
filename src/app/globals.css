@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   MRMNHS ICT Club — design tokens
+
+   Palette extracted from the official logos (public/images/):
+   - School seal: deep yellow/gold, black, warm bronze.
+   - ICT Club logo: navy blue, golden yellow, red accents on white.
+   Navy = primary branding, white = backgrounds, yellow = primary CTAs,
+   red = restrained secondary accent, gray = borders/dividers/supporting text.
+   Circuit-board motifs are kept subtle and decorative only.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #dae3f1;
+  --color-navy-200: #b7c8e2;
+  --color-navy-300: #8da4c8;
+  --color-navy-400: #5e7cae;
+  --color-navy-500: #3c5f93;
+  --color-navy-600: #274a80;
+  --color-navy-700: #1a3a78; /* club navy (from the logo) */
+  --color-navy-800: #132c5c;
+  --color-navy-900: #0d2147;
+  --color-navy-950: #071531;
+
+  --color-gold-300: #ffe15c;
+  --color-gold-400: #f8d828; /* primary CTA yellow (from the logos) */
+  --color-gold-500: #dfbc0f;
+  --color-gold-600: #b8930a;
+
+  /* Restrained secondary accent — used sparingly (dangers, small details). */
+  --color-club-red: #c81c1c;
+  --color-club-red-dark: #a01616;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visible keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid var(--color-gold-400);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Subtle circuit-board dot pattern used in hero/CTA panels (decorative only). */
+.circuit-bg {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(148 163 184 / 0.16) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+/* Faint blueprint grid behind navy hero/CTA sections. */
+.grid-sheen {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+/* Circuit traces with node endpoints — subtle technical detail for hero panels. */
+.circuit-trace {
+  background-image:
+    linear-gradient(to right, rgb(248 216 40 / 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(94 124 174 / 0.28) 1px, transparent 1px);
+  background-size: 56px 56px, 56px 56px;
+  background-position: -1px -1px, -1px -1px;
+}
+
+.code-decoration {
+  font-family: var(--font-mono);
+}
